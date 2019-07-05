@@ -1,0 +1,16 @@
+# Specify filepatterns you want git to ignore.
+
+# folders
+.idea/
+.vscode/
+.terraform/
+*/bin/
+*/obj/
+
+# ssh key files
+*.pem
+*.pub
+
+# terraform
+*.backup
+*.tfstate
