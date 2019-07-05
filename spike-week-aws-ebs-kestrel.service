@@ -1,0 +1,17 @@
+[Unit]
+Description=Spike Week App
+
+[Service]
+WorkingDirectory=/home/ec2-user/SpikeWeekAws/bin/Release/netcoreapp2.1/publish/
+ExecStart=/usr/bin/dotnet /home/ec2-user/SpikeWeekAws/bin/Release/netcoreapp2.1/publish/SpikeWeekAws.dll
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=spike-week-app
+User=ec2-user
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

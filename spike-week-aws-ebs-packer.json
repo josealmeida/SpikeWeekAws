@@ -1,0 +1,47 @@
+{
+  "variables": {
+    "source_ami": "ami-0fbcca2287d583772",
+    "region": "eu-west-2",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "profile": "josealmeida.nice",
+      "ami_name": "spike-week-aws-packer-{{timestamp}}",
+      "source_ami": "{{user `source_ami`}}",
+      "region": "{{user `region` }}",
+      "instance_type": "{{user `instance_type` }}",
+      "ssh_username": "{{user `ssh_username` }}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline":["mkdir ~/SpikeWeekAws"]
+    },
+    {
+      "type": "file",
+      "source": "./SpikeWeekAws/",
+      "destination": "~/SpikeWeekAws"
+    },
+    {
+      "type": "file",
+      "source": "spike-week-aws-ebs-kestrel.service",
+      "destination": "~/SpikeWeekAws/spike-week-aws-ebs-kestrel.service"
+    },
+    {
+      "type": "shell",
+      "inline":["sudo mv ~/SpikeWeekAws/spike-week-aws-ebs-kestrel.service /etc/systemd/system/spike-week-kestrel.service"]
+    },
+    {
+      "type": "shell",
+      "inline":["sudo amazon-linux-extras install ansible2"]
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "spike-week-aws-ebs-packer-provisioning.yml"
+    }
+  ]
+}
