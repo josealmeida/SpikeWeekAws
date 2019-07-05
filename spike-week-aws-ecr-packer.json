@@ -1,0 +1,37 @@
+{
+  "variables": {
+    "source_ami": "ami-0fbcca2287d583772",
+    "region": "eu-west-2",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "mcr.microsoft.com/dotnet/core/sdk:2.1",
+      "export_path": "spike-week-image.tar",
+      "container_dir":"/containers",
+      "changes": [
+        "USER ec2-user",
+        "EXPOSE 5000 5001",
+        "WORKDIR /app",
+        "ENTRYPOINT [\"dotnet\", \"./out/SpikeWeekAws.dll\"]"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./SpikeWeekAws/",
+      "destination": "/app/"
+    },
+    {
+      "type": "shell",
+      "inline":["dotnet restore /app/SpikeWeekAws.csproj"]
+    },
+    {
+      "type": "shell",
+      "inline":["dotnet publish /app/SpikeWeekAws.csproj --configuration Release --output /app/out/"]
+    }
+  ]
+}
