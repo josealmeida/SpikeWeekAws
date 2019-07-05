@@ -1,0 +1,13 @@
+- name: provision spike_week_ec2_ami
+  hosts: all
+  remote_user: ec2-user
+  tasks:
+    - name: Restore app packages
+      command: dotnet restore ~/SpikeWeekAws/SpikeWeekAws.csproj
+
+    - name: Publish the app
+      command: dotnet publish ~/SpikeWeekAws/SpikeWeekAws.csproj --configuration Release
+
+    - name: Enable app service
+      become: yes
+      command: systemctl enable spike-week-kestrel.service
