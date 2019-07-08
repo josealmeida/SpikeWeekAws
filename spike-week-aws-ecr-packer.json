@@ -1,37 +1,42 @@
 {
   "variables": {
-    "source_ami": "ami-0fbcca2287d583772",
-    "region": "eu-west-2",
-    "instance_type": "t2.micro",
-    "ssh_username": "ec2-user"
+    "ecr_base": "508281263350.dkr.ecr.eu-west-2.amazonaws.com",
+    "aws_profile": "josealmeida.nice",
+    "tag": "0.2"
   },
   "builders": [
     {
       "type": "docker",
-      "image": "mcr.microsoft.com/dotnet/core/sdk:2.1",
-      "export_path": "spike-week-image.tar",
+      "image": "mcr.microsoft.com/dotnet/core/runtime:2.1",
+      "commit": true,
       "container_dir":"/containers",
       "changes": [
-        "USER ec2-user",
         "EXPOSE 5000 5001",
         "WORKDIR /app",
-        "ENTRYPOINT [\"dotnet\", \"./out/SpikeWeekAws.dll\"]"
+        "ENTRYPOINT [\"dotnet\", \"SpikeWeekAws.dll\"]"
       ]
     }
   ],
   "provisioners": [
     {
       "type": "file",
-      "source": "./SpikeWeekAws/",
+      "source": "./SpikeWeekAws/bin/Release/netcoreapp2.1",
       "destination": "/app/"
-    },
-    {
-      "type": "shell",
-      "inline":["dotnet restore /app/SpikeWeekAws.csproj"]
-    },
-    {
-      "type": "shell",
-      "inline":["dotnet publish /app/SpikeWeekAws.csproj --configuration Release --output /app/out/"]
     }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "{{user `ecr_base` }}/spikeweekaws",
+        "tag": "{{user `tag` }}"
+      },
+      {
+        "type": "docker-push",
+        "ecr_login": true,
+        "aws_profile": "{{user `aws_profile` }}",
+        "login_server": "https://{{user `ecr_base` }}/"
+      }
+    ]
   ]
 }
