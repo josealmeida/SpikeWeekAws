@@ -18,3 +18,4 @@
 
 #packer
 *.tar
+vars.json

@@ -1,0 +1,6 @@
+{
+  "aws_profile": "",
+  "ecr_url": "",
+  "ecr_tag": "",
+  "ecr_base_image": ""
+}

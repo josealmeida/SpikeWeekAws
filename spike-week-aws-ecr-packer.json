@@ -1,13 +1,8 @@
 {
-  "variables": {
-    "ecr_base": "508281263350.dkr.ecr.eu-west-2.amazonaws.com",
-    "aws_profile": "josealmeida.nice",
-    "tag": "0.2"
-  },
   "builders": [
     {
       "type": "docker",
-      "image": "mcr.microsoft.com/dotnet/core/runtime:2.1",
+      "image": "{{user `ecr_base_image` }}",
       "commit": true,
       "container_dir":"/containers",
       "changes": [
@@ -28,14 +23,14 @@
     [
       {
         "type": "docker-tag",
-        "repository": "{{user `ecr_base` }}/spikeweekaws",
-        "tag": "{{user `tag` }}"
+        "repository": "{{user `ecr_url` }}/spikeweekaws",
+        "tag": "{{user `ecr_tag` }}"
       },
       {
         "type": "docker-push",
         "ecr_login": true,
         "aws_profile": "{{user `aws_profile` }}",
-        "login_server": "https://{{user `ecr_base` }}/"
+        "login_server": "https://{{user `ecr_url` }}/"
       }
     ]
   ]
